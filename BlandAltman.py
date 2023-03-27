@@ -2,7 +2,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 from collections import namedtuple
+import os
 
+def savefig(fig,fig_ttl,path=None,rp=False,facecolor='w',transparent=False):
+    '''
+    fig: Figure object matplotlib.figure.Figure
+    fig_ttl: figure title string (some specila characterls will be removed from the file name)
+    '''
+    for ch in [' ','[',']','=','(',')','/']:
+        if ch in fig_ttl:
+            fig_ttl=fig_ttl.replace(ch,'-')
+    fig_ttl=fig_ttl.replace('.','p')
+    if path==None:
+        filename=fig_ttl
+    else:
+        filename=path+fig_ttl
+    if not(rp):
+        if os.path.isfile(filename+'.png'):
+            usr=input('Replace existing file?: ')
+            if usr=='y':
+                rp=True
+        else:
+            rp=True
+    if rp:
+        if transparent:
+            fig.savefig(filename+'.png', format='png', dpi=200,bbox_inches='tight',transparent=transparent)
+        else:
+            fig.savefig(filename+'.png', format='png', dpi=200,facecolor='w',bbox_inches='tight')
+        print(filename+'.png SAVED.')
 
 def plot_BAvsScat(x_input,y_input,label='',xy_labels = None,saveplot=0, scat=1, binscale=1.0, xx_unc_modl=np.sqrt(0.5), yy_unc_modl=np.sqrt(0.5)):
     '''
@@ -186,9 +213,8 @@ def plot_BAvsScat(x_input,y_input,label='',xy_labels = None,saveplot=0, scat=1, 
 
     #save figure if savefig=1
     if saveplot == 1:
-        figname=label+"_blandaltman.pdf"
-        print('Saved figure to:',figname)
-        fig.savefig(figname)
+        figname=label+"_blandaltman"
+        savefig(fig,figname)
 
     #violà!
     #plt.show()
